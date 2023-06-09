@@ -4,7 +4,8 @@ import {
   MdPerson,
   MdHome,
   MdLock,
-  MdOutlineShoppingCart
+  MdOutlineShoppingCart,
+  MdQueryStats
 } from 'react-icons/md'
 
 // Admin Imports
@@ -17,8 +18,16 @@ import RTL from 'pages/rtl/rtl-default'
 // Auth Imports
 import SignInCentered from 'pages/auth/sign-in'
 import { IRoute } from 'types/navigation'
+import NewQuery from 'pages/admin/new-query'
 
 const routes: IRoute[] = [
+  {
+    name: 'New Query',
+    layout: '/admin',
+    path: '/new-query',
+    icon: <Icon as={MdQueryStats} width='20px' height='20px' color='inherit' />,
+    component: NewQuery,
+  },
   {
     name: 'Main Dashboard',
     layout: '/admin',
