@@ -16,30 +16,69 @@ import { BiSearch, BiFullscreen, BiCollapse, BiCodeAlt } from 'react-icons/bi';
 import { AiOutlineTable } from 'react-icons/ai';
 import React from "react";
 import { useEffect, useState } from 'react';
-import AceEditor from "react-ace";
+// import AceEditor from "react-ace";
+// import beautify from 'ace-builds/src-noconflict/ext-beautify';
+import dynamic from 'next/dynamic'
+
+import Editor from 'components/editor/Editor';
+
 
 // require("ace-builds/src-noconflict/theme-monokai");
 
 export default function DevelopTextEditor() {
 
-    const [DynamicAceEditor, setDynamicAceEditor] = useState(null);
+    const Ace = dynamic(
+        () => import("components/editor/Editor"),
+        { ssr: false }
+    )
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            import('react-ace').then((module) => {
-                setDynamicAceEditor(() => module.default);
-            });
+    // const beautify = dynamic(
+    //     () => import('ace-builds/src-noconflict/ext-beautify'),
+    //     { ssr: false }
+    // )
 
-        }
-    }, []);
+    // const {mysql, monokai, _} = dynamic(
+    //     () => [
+    //        ,
+    //         import('ace-builds/src-noconflict/theme-monokai'),
+    //         import('ace-builds/src-noconflict/ext-language_tools'),
+    //     ],
+    //     { ssr: false }
+    // )
 
-    if (!DynamicAceEditor) {
-        return null;
+
+
+
+    // const [AceEditor, setAceEditor] = useState(null);
+
+    // useEffect(() => {
+    //     if (typeof window !== 'undefined') {
+    //         import('react-ace').then((module) => {
+    //             setAceEditor(() => module.default);
+    //         });
+
+    //     }
+    // }, []);
+
+    // if (!AceEditor) {
+    //     return null;
+    // }
+
+
+    // var beautify = require('ace-builds/src-noconflict/ext-beautify');
+    const handleFormatCodeClick = () => {
+        // const editor = AceEditor.
+        // console.log(AceEditor);
+        // if (editor) {
+        //     alert("exists editor!")
+        // }else {
+
+        //     alert("don't exists editor!")
+        // }
+
+        // beautify
     }
 
-    require('ace-builds/src-noconflict/mode-mysql');
-    require('ace-builds/src-noconflict/theme-monokai');
-    require('ace-builds/src-noconflict/ext-language_tools');
 
     return (
         <SimpleGrid
@@ -48,64 +87,32 @@ export default function DevelopTextEditor() {
             <Box
                 borderWidth="1px" borderRadius="lg" overflow="hidden"
             >
-                <Box
-                >
-                    <DynamicAceEditor
-                        placeholder="Placeholder Text"
-                        mode="mysql"
-                        theme="monokai"
-                        name="blah2"
-                        //   onLoad={this.onLoad}
-                        //   onChange={this.onChange}
-                        fontSize={14}
-                        showPrintMargin={true}
-                        showGutter={true}
-                        highlightActiveLine={true}
-                        //   value={`select * from hyperdot;`}
-                        width="100%"
-                        height="300px"
-                        setOptions={{
-                            enableBasicAutocompletion: true,
-                            enableLiveAutocompletion: true,
-                            enableSnippets: false,
-                            showLineNumbers: true,
-                            tabSize: 2,
-                        }}
-                    />
-                </Box>
 
-                <Box
-                    bg="black"
-                >
-                    <Flex p="2">
-                        {/* Expand Icon */}
-                        <IconButton
-                            aria-label="Expand"
-                            icon={<BiCollapse />}
-                            bg="black"
-                            color="white"
-                            _hover={{ bg: 'black' }}
-                            mr="2"
-                        />
-                        {/* Format Query Icon */}
-                        <IconButton
-                            aria-label="Format Query"
-                            icon={<BiCodeAlt />}
-                            bg="black"
-                            color="white"
-                            _hover={{ bg: 'black' }}
-                            mr="2"
-                        />
-                        {/* Full Screen Icon */}
-                        <IconButton
-                            aria-label="Full Screen"
-                            icon={<BiFullscreen />}
-                            bg="black"
-                            color="white"
-                            _hover={{ bg: 'black' }}
-                        />
-                    </Flex>
-                </Box>
+                <Ace
+                    placeholder="Placeholder Text"
+                    mode="mysql"
+                    theme="monokai"
+                    name="blah2"
+                    //   onLoad={this.onLoad}
+                    //   onChange={this.onChange}
+                    fontSize={14}
+                    showPrintMargin={true}
+                    showGutter={true}
+                    highlightActiveLine={true}
+                    //   value={`select * from hyperdot;`}
+                    width="100%"
+                    // height="300px"
+                    // commands={beautify.commands}
+
+                    setOptions={{
+                        enableBasicAutocompletion: true,
+                        enableLiveAutocompletion: true,
+                        enableSnippets: false,
+                        showLineNumbers: true,
+                        tabSize: 2,
+                    }}
+                />
+
             </Box>
 
             <Box mt="5">
