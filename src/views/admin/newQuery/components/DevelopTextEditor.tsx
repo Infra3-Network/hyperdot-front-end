@@ -4,12 +4,17 @@
 // import "ace-builds/src-noconflict/ext-language_tools";
 
 import CheckTable from 'views/admin/dataTables/components/CheckTable'
-import {
-    columnsDataDevelopment,
-    columnsDataCheck,
-    columnsDataColumns,
-    columnsDataComplex
-} from 'views/admin/dataTables/variables/columnsData'
+
+import { 
+    polkadotBlockColumns,
+
+} from '../variables/polkadotColumnData';
+
+
+
+import PolkadotBlockTable from 'views/admin/newQuery/components/PolkadotBlockTable';
+import polkadotData from 'views/admin/newQuery/variables/polkadotData.json';
+
 import tableDataCheck from 'views/admin/dataTables/variables/tableDataCheck.json'
 import { Box, Flex, Input, IconButton, Select, Textarea, SimpleGrid } from '@chakra-ui/react';
 import { BiSearch, BiFullscreen, BiCollapse, BiCodeAlt } from 'react-icons/bi';
@@ -116,9 +121,9 @@ export default function DevelopTextEditor() {
             </Box>
 
             <Box mt="5">
-                <CheckTable
-                    columnsData={columnsDataCheck}
-                    tableData={(tableDataCheck as unknown) as TableData[]}
+                <PolkadotBlockTable
+                    columnsData={polkadotBlockColumns}
+                    tableData={polkadotData}
                 />
             </Box>
 
