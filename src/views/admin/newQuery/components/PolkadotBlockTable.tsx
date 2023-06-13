@@ -7,7 +7,8 @@ import {
   Th,
   Thead,
   Tr,
-  useColorModeValue
+  useColorModeValue,
+  Button
 } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 import {
@@ -21,7 +22,7 @@ import {
 import Card from 'components/card/Card'
 import Menu from 'components/menu/MainMenu'
 import { TableProps } from 'views/admin/default/variables/columnsData'
-export default function ColumnsTable (props: TableProps) {
+export default function ColumnsTable(props: TableProps) {
   const { columnsData, tableData } = props
 
   const columns = useMemo(() => columnsData, [columnsData])
@@ -45,7 +46,7 @@ export default function ColumnsTable (props: TableProps) {
     prepareRow,
     initialState
   } = tableInstance
-  initialState.pageSize = 5
+  initialState.pageSize = 10
 
   const textColor = useColorModeValue('secondaryGray.900', 'white')
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100')
@@ -65,7 +66,7 @@ export default function ColumnsTable (props: TableProps) {
           fontWeight='700'
           lineHeight='100%'
         >
-          4-Column Table
+          Block Table
         </Text>
         <Menu />
       </Flex>
@@ -133,6 +134,12 @@ export default function ColumnsTable (props: TableProps) {
                         {cell.value}
                       </Text>
                     )
+                  } else if (cell.column.Header === 'EXTRINSICS ROOT') {
+                    data = (
+                      <Text color={textColor} fontSize='sm' fontWeight='700'>
+                        {cell.value}
+                      </Text>
+                    )
                   }
                   return (
                     <Td
@@ -151,6 +158,13 @@ export default function ColumnsTable (props: TableProps) {
           })}
         </Tbody>
       </Table>
+
+      <Button  >
+        上一页
+      </Button>
+      <Button  >
+        下一页
+      </Button>
     </Card>
   )
 }

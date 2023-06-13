@@ -48,7 +48,7 @@ export default function DevelopmentTable (props: TableProps) {
     prepareRow,
     initialState
   } = tableInstance
-  initialState.pageSize = 11
+  initialState.pageSize = 10
 
   const textColor = useColorModeValue('secondaryGray.900', 'white')
   const iconColor = useColorModeValue('secondaryGray.500', 'white')

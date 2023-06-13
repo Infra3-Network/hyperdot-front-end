@@ -17,8 +17,8 @@ function onChange(newValue) {
 }
 
 const Editor = (props) => {
-    const defaultHeight = "300px";
-    const expandHeight = "500px";
+    const defaultHeight = "250px";
+    const expandHeight = "400px";
     const [height, setHeight] = useState(props.height ? props.height : defaultHeight);
     const editorRef = useRef<any>();
 
@@ -49,7 +49,6 @@ const Editor = (props) => {
 
     return (
         <Box>
-            <Box id="example"></Box>
             <AceEditor
                 mode="mysql"
                 theme="dracula"

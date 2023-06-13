@@ -5,7 +5,7 @@
 
 import CheckTable from 'views/admin/dataTables/components/CheckTable'
 
-import { 
+import {
     polkadotBlockColumns,
 
 } from '../variables/polkadotColumnData';
@@ -86,48 +86,65 @@ export default function DevelopTextEditor() {
 
 
     return (
-        <SimpleGrid
-            columns={{ sm: 0, md: 1 }}
+        <Flex
+            width="60%"
+            height="100%"
         >
             <Box
-                borderWidth="1px" borderRadius="lg" overflow="hidden"
             >
 
-                <Ace
-                    placeholder="Placeholder Text"
-                    mode="mysql"
-                    theme="monokai"
-                    name="blah2"
-                    //   onLoad={this.onLoad}
-                    //   onChange={this.onChange}
-                    fontSize={14}
-                    showPrintMargin={true}
-                    showGutter={true}
-                    highlightActiveLine={true}
-                    //   value={`select * from hyperdot;`}
-                    width="100%"
-                    // height="300px"
-                    // commands={beautify.commands}
+                <Flex
+                    height="300px"
+                    direction="column"
+                    borderWidth="1px"
+                    borderRadius="lg"
+                    overflow="hidden"
+                >
 
-                    setOptions={{
-                        enableBasicAutocompletion: true,
-                        enableLiveAutocompletion: true,
-                        enableSnippets: false,
-                        showLineNumbers: true,
-                        tabSize: 2,
-                    }}
-                />
+                    <Ace
+                        placeholder="Placeholder Text"
+                        mode="mysql"
+                        theme="monokai"
+                        name="blah2"
+                        //   onLoad={this.onLoad}
+                        //   onChange={this.onChange}
+                        fontSize={14}
+                        showPrintMargin={true}
+                        showGutter={true}
+                        highlightActiveLine={true}
+                        //   value={`select * from hyperdot;`}
+                        width="100%"
+                        height="300px"
+                        // commands={beautify.commands}
+
+                        setOptions={{
+                            enableBasicAutocompletion: true,
+                            enableLiveAutocompletion: true,
+                            enableSnippets: false,
+                            showLineNumbers: true,
+                            tabSize: 2,
+                        }}
+                    />
+
+                </Flex>
+
+                {/* <Box mt="5"> */}
+                {/* <Flex
+                    height="70%"
+                    mt = "5"
+                    direction="column"
+                    overflowX={{ sm: 'scroll', lg: 'scroll' }}
+                    overflowY={{ sm: 'scroll', lg: 'scroll' }}
+                > */}
+                    <PolkadotBlockTable
+                        columnsData={polkadotBlockColumns}
+                        tableData={polkadotData}
+                    />
+                    {/* </Box> */}
+                {/* </Flex> */}
 
             </Box>
-
-            <Box mt="5">
-                <PolkadotBlockTable
-                    columnsData={polkadotBlockColumns}
-                    tableData={polkadotData}
-                />
-            </Box>
-
-        </SimpleGrid>
+        </Flex>
     );
 }
 
