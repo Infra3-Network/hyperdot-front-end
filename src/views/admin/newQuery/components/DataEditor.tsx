@@ -12,27 +12,53 @@ import "ace-builds/src-noconflict/theme-dracula";
 import "ace-builds/src-noconflict/ext-language_tools";
 import beautify from 'ace-builds/src-noconflict/ext-beautify';
 
-function onChange(newValue) {
-    console.log("change", newValue);
-}
+const defaultHeight = '200px';
+const expandHeight = "250px";
 
-const Editor = (props) => {
-    const defaultHeight = "200px";
-    const expandHeight = "250px";
-    const [height, setHeight] = useState(props.height ? props.height : defaultHeight);
-    // const [value, setValue] = useState('');
+const DataEditor = (props) => {
+    const [height, setHeight] = useState(defaultHeight);
+    const selectedDataEngine = props.selectedDataEngine;
+    const selectedChain = props.selectedChain;
+    const [value, setValue] = useState('');
     const editorRef = useRef<any>();
 
-    
+
     const [isRunning, setRunning] = useState(false);
 
     const handleFormatCodeClick = () => {
         beautify.beautify(editorRef.current.editor.session)
     }
 
-    const handleRunClick = ({engine, table}) => {
+    const handleRunClick = ({ engine, table }) => {
         setRunning(true);
-        console.log(value)
+
+        const apiUrl = '/apis/v1/';
+        const requestData = {
+            chain: engine,
+            query: table,
+        };
+
+        // fetch(apiUrl, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(requestData),
+        // })
+        //     .then((response) => response.json())
+        //     .then((data) => {
+        //         // 处理响应数据
+        //         console.log(data);
+        //     })
+        //     .catch((error) => {
+        //         // 处理请求错误
+        //         console.error(error);
+        //     })
+        //     .finally(() => {
+        //         // 请求完成后重置 UI 状态
+        //         setRunning(false);
+        //     });
+
         // Perform the desired action
         // For example, make an API request or run a function
 
@@ -47,20 +73,27 @@ const Editor = (props) => {
             <AceEditor
                 mode="mysql"
                 theme="dracula"
-                onChange={(newValue) => {
-                    // props.setEditorValue(newValue)
-                    
-                } }
-                name="example"
+                onChange={(newValue) => setValue(newValue)}
+                onInput={(event?: any) => { }}
+                onLoad={() => {
+                }}
+                onValidate={(anno) => console.log(anno)}
+                name="data-editor"
                 editorProps={{ $blockScrolling: true }}
-                showGutter={props.showGutter}
-                fontSize={props.fontSize}
-                showPrintMargin={props.showPrintMargin}
-                highlightActiveLine={props.highlightActiveLine}
-                setOptions={props.setOptions}
+                fontSize={14}
+                showPrintMargin={true}
+                showGutter={true}
+                highlightActiveLine={true}
+                width="100%"
                 ref={editorRef}
-                width={props.width}
-                value={props.editorValue}
+                setOptions={{
+                    enableBasicAutocompletion: true,
+                    enableLiveAutocompletion: true,
+                    enableSnippets: true,
+                    showLineNumbers: true,
+                    tabSize: 2,
+                }}
+                value={value ? value : props.editorValue}
                 height={height}
             />
             <Box
@@ -116,7 +149,6 @@ const Editor = (props) => {
                                 size="sm"
                                 borderTopRightRadius="none"
                                 borderBottomRightRadius="none"
-                                borderRadius="base"
                                 rightIcon={<SearchIcon />}
                                 onClick={handleRunClick}
                                 disabled={isRunning}
@@ -137,7 +169,6 @@ const Editor = (props) => {
                                 // ml="0."
                                 borderTopLeftRadius="none"
                                 borderBottomLeftRadius="none"
-                                borderRadius="base"
                                 rightIcon={<TriangleDownIcon />}
                             >
                             </Button>
@@ -150,4 +181,4 @@ const Editor = (props) => {
     )
 };
 
-export default Editor;
+export default DataEditor;
