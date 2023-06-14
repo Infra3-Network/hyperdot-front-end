@@ -2,19 +2,26 @@ import {
   Box, SimpleGrid, Flex,
   ListItem,
   Button,
+  ListIcon,
+  List,
   Grid,
   GridItem,
-  Input, IconButton, Select, Alert, AlertIcon, Link, UnorderedList
+  Input, IconButton, Select, Alert, AlertIcon, Link, UnorderedList, CircularProgress
 } from '@chakra-ui/react'
 import { BiSearch, BiFullscreen, BiCollapse, BiCodeAlt } from 'react-icons/bi';
-import { AiOutlineTable } from 'react-icons/ai';
+import { AiOutlineFundView } from 'react-icons/ai';
+import { BsTable } from 'react-icons/bs';
+import { SearchIcon, TriangleDownIcon } from '@chakra-ui/icons';
+
+import Card from "components/card/Card"
+
 
 import {
   polkadotBlockColumns,
 
 } from 'views/admin/newQuery/variables/polkadotColumnData';
 
-import DevelopTextEditor from 'views/admin/newQuery/components/DevelopTextEditor';
+import Editor from 'views/admin/newQuery/components/DevelopTextEditor';
 import PolkadotBlockTable from 'views/admin/newQuery/components/PolkadotBlockTable';
 import polkadotData from 'views/admin/newQuery/variables/polkadotData.json';
 import DevelopmentTable from 'views/admin/dataTables/components/DevelopmentTable'
@@ -31,70 +38,165 @@ import tableDataDevelopment from 'views/admin/dataTables/variables/tableDataDeve
 import tableDataCheck from 'views/admin/dataTables/variables/tableDataCheck.json'
 import tableDataColumns from 'views/admin/dataTables/variables/tableDataColumns.json'
 import tableDataComplex from 'views/admin/dataTables/variables/tableDataComplex.json'
-import React from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import AdminLayout from 'layouts/admin'
 import { TableData } from 'views/admin/default/variables/columnsData'
 import dynamic from 'next/dynamic'
 
+
+function DataEngineSelect({ selectedEngine, setSelectedEngine, dataEngines }) {
+  if (!dataEngines) {
+    return <Select mb="4" placeholder="Select Data Engine" />
+  }
+
+  return (
+    <Select mb="4" placeholder="Select Data Engine" value={selectedEngine} onChange={(e) => setSelectedEngine(e.target.value)}>
+      {dataEngines.engines.map((engine, index) => (
+        <option key={index} value={engine.name}>{engine.name}</option>
+      ))}
+    </Select>
+  )
+}
+
+function ChianSelect({ selectedEngine, dataEngines, selectedChain, setSelectedChain }) {
+  if (selectedEngine.length == 0) {
+    return <Select ml="4" placeholder="Select Chain" />
+  }
+  if (!dataEngines.support_chains[selectedEngine]) {
+    return <Select ml="4" placeholder="No Chain support for this engine" />
+  }
+
+  let chains = dataEngines.support_chains[selectedEngine];
+  return (
+    <Select ml="4" placeholder="Select Chain" value={selectedChain} onChange={(e) => setSelectedChain(e.target.value)}>
+      {chains.map(chain => (
+        <option key={chain} value={chain}>
+          {chain}
+        </option>
+      ))}
+    </Select>
+  )
+}
+
+function DataEngineView({ selectedEngine, selectedChain, dataTables, setDataTables }) {
+  if (!(selectedEngine && selectedChain)) {
+    return <Box bg="gray.400"></Box>
+  }
+
+
+  useEffect(() => {
+    if (selectedEngine && selectedChain) {
+      if (selectedEngine == "postgres" && selectedChain == "polkadot") {
+        if (dataTables === null) {
+          fetch('http://127.0.0.1:3000/apis/v1/polkadot/psql/tables')
+            .then(response => response.json())
+            .then(data => setDataTables(data))
+            .catch(error => console.error(error));
+
+        }
+      }
+    }
+  }, [selectedEngine, selectedChain, setDataTables])
+
+  if (dataTables === null) {
+    return <Box bg="gray.400"></Box>
+  }
+
+
+  dataTables.tables.map(table_name => {
+    console.log(table_name)
+  })
+  return (
+    <List>
+      {dataTables.tables.map(table_name => (
+
+        <ListItem key={table_name}>
+          <Flex align="center">
+            <Box w={'20%'}>
+              <ListIcon as={BsTable} color='gray.400' />
+            </Box>
+            <Box w={'80%'}>
+              <Link href="#" >
+                {table_name}
+              </Link>
+            </Box>
+            {/* <Box ml="2"><AiOutlineFundView/></Box> */}
+            {/* <Button ml="2" size="sm" variant="ghost">按钮图标</Button> */}
+          </Flex>
+        </ListItem>
+      ))}
+    </List>
+  )
+}
+
+
+
 export default function NewQuery() {
-  const Ace = dynamic(
-    () => import("components/editor/Editor"),
+  const editorRef = useRef<any>(null);
+  const [dataEngines, setDataEngines] = useState(null);
+  const [selectedEngine, setSelectedEngine] = useState('');
+  const [selectedChain, setSelectedChian] = useState('');
+  const [dataTables, setDataTabls] = useState(null);
+  const [isRunning, setRunning] = useState(false);
+  const [editorValue, setEditorValue] = useState('');
+
+
+
+  const AceEditor = dynamic(
+    () => import('views/admin/newQuery/components/DevelopTextEditor'),
     { ssr: false }
   )
+
+  useEffect(() => {
+    fetchDataEngines();
+  }, []);
+
+  const fetchDataEngines = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:3000/apis/core/dataengines');
+      const data = await response.json();
+      setDataEngines(data);
+    } catch (error) {
+      console.error('Error fetching data engines:', error);
+    }
+  };
 
   return (
     <AdminLayout>
       <Flex height="100vh" pt={{ base: '130px', md: '80px', xl: '80px' }}>
-        {/* <Box pt={{ base: '130px', md: '80px', xl: '80px' }}> */}
-        {/* <SimpleGrid
-          mb='20px'
-          columns={{ sm: 0, md: 2 }}
-          spacing={{ base: '10px', xl: '10px' }}
-        > */}
-
-        {/* 第一列 */}
-        <Box width="20%" height="100%">
+        <Box width="20%" height="100%" >
           <Flex direction="column" height="100%">
             {/* 第一部分 */}
             <Flex direction="column" p="4">
-              <Select placeholder="选择框" mb="4" />
+              <DataEngineSelect
+                dataEngines={dataEngines}
+                selectedEngine={selectedEngine}
+                setSelectedEngine={setSelectedEngine}
+              />
+
               <Alert status="info">
                 <AlertIcon />
                 这是一个信息提示框
               </Alert>
             </Flex>
-            {/* 第二部分 */}
             <Flex direction="column" p="4">
-              {/* 第一个 Flex */}
               <Flex align="center" mb="4">
                 <Link href="#">链接</Link>
-                <Select ml="4" placeholder="选择不同的chain" />
+                <ChianSelect
+                  selectedEngine={selectedEngine}
+                  dataEngines={dataEngines}
+                  selectedChain={selectedChain}
+                  setSelectedChain={setSelectedChian}
+                />
+
               </Flex>
-              {/* 第二个 Flex */}
               <Flex direction="column">
-                <UnorderedList>
-                  <ListItem>
-                    <Flex align="center">
-                      <Link href="#">chain名称</Link>
-                      <Box ml="2">数据图标</Box>
-                      <Button ml="2" size="sm" variant="ghost">按钮图标</Button>
-                    </Flex>
-                  </ListItem>
-                  <ListItem>
-                    <Flex align="center">
-                      <Link href="#">chain名称</Link>
-                      <Box ml="2">数据图标</Box>
-                      <Button ml="2" size="sm" variant="ghost">按钮图标</Button>
-                    </Flex>
-                  </ListItem>
-                  <ListItem>
-                    <Flex align="center">
-                      <Link href="#">chain名称</Link>
-                      <Box ml="2">数据图标</Box>
-                      <Button ml="2" size="sm" variant="ghost">按钮图标</Button>
-                    </Flex>
-                  </ListItem>
-                </UnorderedList>
+                <DataEngineView
+                  selectedEngine={selectedEngine}
+                  selectedChain={selectedChain}
+                  dataTables={dataTables}
+                  setDataTables={setDataTabls}
+                />
               </Flex>
             </Flex>
           </Flex>
@@ -113,42 +215,27 @@ export default function NewQuery() {
             overflow="hidden"
           >
 
-            <Ace
-              placeholder="Placeholder Text"
-              mode="mysql"
-              theme="monokai"
-              name="blah2"
-              //   onLoad={this.onLoad}
-              //   onChange={this.onChange}
-              fontSize={14}
-              showPrintMargin={true}
-              showGutter={true}
-              highlightActiveLine={true}
-              //   value={`select * from hyperdot;`}
-              width="100%"
-              // height="200px"
-              // commands={beautify.commands}
-
-              setOptions={{
-                enableBasicAutocompletion: true,
-                enableLiveAutocompletion: true,
-                enableSnippets: false,
-                showLineNumbers: true,
-                tabSize: 2,
-              }}
-            />
+              <AceEditor
+                mode="mysql"
+                theme="monokai"
+                name="blah2"
+                fontSize={14}
+                showPrintMargin={true}
+                showGutter={true}
+                highlightActiveLine={true}
+                width="100%"
+                editorRef={editorRef}
+                height='200px'
+                value={editorValue}
+                setEditorValue={setEditorValue}
+              />
 
           </Flex>
 
-          {/* <Box mt="5"> */}
           <Flex
             mt="5"
             direction="column"
           >
-            {/* <DevelopmentTable
-              columnsData={columnsDataDevelopment}
-              tableData={(tableDataDevelopment as unknown) as TableData[]}
-            /> */}
             <PolkadotBlockTable
               columnsData={polkadotBlockColumns}
               tableData={polkadotData}
@@ -157,26 +244,6 @@ export default function NewQuery() {
           </Flex>
 
         </Box>
-
-        {/* <DevelopTextEditor /> */}
-        {/* <DevelopmentTable
-              columnsData={columnsDataDevelopment}
-              tableData={(tableDataDevelopment as unknown) as TableData[]}
-            /> */}
-        {/* <CheckTable
-              columnsData={columnsDataCheck}
-              tableData={(tableDataCheck as unknown) as TableData[]}
-            /> */}
-        {/* <ColumnsTable
-              columnsData={columnsDataColumns}
-              tableData={(tableDataColumns as unknown) as TableData[]}
-            />
-            <ComplexTable
-              columnsData={columnsDataComplex}
-              tableData={(tableDataComplex as unknown) as TableData[]}
-            /> */}
-        {/* </SimpleGrid> */}
-        {/* </Box> */}
       </Flex>
     </AdminLayout>
   )

@@ -1,151 +1,153 @@
-// import "ace-builds/src-noconflict/mode-jsx";
-// import "ace-builds/src-noconflict/mode-mysql";
-// import "ace-builds/src-noconflict/theme-monokai";
-// import "ace-builds/src-noconflict/ext-language_tools";
+import { useEffect, useRef, useState } from "react";
+import { render } from "react-dom";
+import AceEditor from "react-ace";
+import { Box, Flex, IconButton, Select, Text, Button, Grid, SimpleGrid, CircularProgress } from '@chakra-ui/react';
+import { BiFullscreen, BiCollapse, BiCodeAlt, BiPlay } from 'react-icons/bi';
+import { SearchIcon, TriangleDownIcon } from "@chakra-ui/icons";
 
-import CheckTable from 'views/admin/dataTables/components/CheckTable'
+// import Box from '@mui/material/Box';
 
-import {
-    polkadotBlockColumns,
+import "ace-builds/src-noconflict/mode-mysql";
+import "ace-builds/src-noconflict/theme-dracula";
+import "ace-builds/src-noconflict/ext-language_tools";
+import beautify from 'ace-builds/src-noconflict/ext-beautify';
 
-} from '../variables/polkadotColumnData';
-
-
-
-import PolkadotBlockTable from 'views/admin/newQuery/components/PolkadotBlockTable';
-import polkadotData from 'views/admin/newQuery/variables/polkadotData.json';
-
-import tableDataCheck from 'views/admin/dataTables/variables/tableDataCheck.json'
-import { Box, Flex, Input, IconButton, Select, Textarea, SimpleGrid } from '@chakra-ui/react';
-import { BiSearch, BiFullscreen, BiCollapse, BiCodeAlt } from 'react-icons/bi';
-import { AiOutlineTable } from 'react-icons/ai';
-import React from "react";
-import { useEffect, useState } from 'react';
-// import AceEditor from "react-ace";
-// import beautify from 'ace-builds/src-noconflict/ext-beautify';
-import dynamic from 'next/dynamic'
-
-import Editor from 'components/editor/Editor';
-
-
-// require("ace-builds/src-noconflict/theme-monokai");
-
-export default function DevelopTextEditor() {
-
-    const Ace = dynamic(
-        () => import("components/editor/Editor"),
-        { ssr: false }
-    )
-
-    // const beautify = dynamic(
-    //     () => import('ace-builds/src-noconflict/ext-beautify'),
-    //     { ssr: false }
-    // )
-
-    // const {mysql, monokai, _} = dynamic(
-    //     () => [
-    //        ,
-    //         import('ace-builds/src-noconflict/theme-monokai'),
-    //         import('ace-builds/src-noconflict/ext-language_tools'),
-    //     ],
-    //     { ssr: false }
-    // )
-
-
-
-
-    // const [AceEditor, setAceEditor] = useState(null);
-
-    // useEffect(() => {
-    //     if (typeof window !== 'undefined') {
-    //         import('react-ace').then((module) => {
-    //             setAceEditor(() => module.default);
-    //         });
-
-    //     }
-    // }, []);
-
-    // if (!AceEditor) {
-    //     return null;
-    // }
-
-
-    // var beautify = require('ace-builds/src-noconflict/ext-beautify');
-    const handleFormatCodeClick = () => {
-        // const editor = AceEditor.
-        // console.log(AceEditor);
-        // if (editor) {
-        //     alert("exists editor!")
-        // }else {
-
-        //     alert("don't exists editor!")
-        // }
-
-        // beautify
-    }
-
-
-    return (
-        <Flex
-            width="60%"
-            height="100%"
-        >
-            <Box
-            >
-
-                <Flex
-                    height="300px"
-                    direction="column"
-                    borderWidth="1px"
-                    borderRadius="lg"
-                    overflow="hidden"
-                >
-
-                    <Ace
-                        placeholder="Placeholder Text"
-                        mode="mysql"
-                        theme="monokai"
-                        name="blah2"
-                        //   onLoad={this.onLoad}
-                        //   onChange={this.onChange}
-                        fontSize={14}
-                        showPrintMargin={true}
-                        showGutter={true}
-                        highlightActiveLine={true}
-                        //   value={`select * from hyperdot;`}
-                        width="100%"
-                        height="300px"
-                        // commands={beautify.commands}
-
-                        setOptions={{
-                            enableBasicAutocompletion: true,
-                            enableLiveAutocompletion: true,
-                            enableSnippets: false,
-                            showLineNumbers: true,
-                            tabSize: 2,
-                        }}
-                    />
-
-                </Flex>
-
-                {/* <Box mt="5"> */}
-                {/* <Flex
-                    height="70%"
-                    mt = "5"
-                    direction="column"
-                    overflowX={{ sm: 'scroll', lg: 'scroll' }}
-                    overflowY={{ sm: 'scroll', lg: 'scroll' }}
-                > */}
-                    <PolkadotBlockTable
-                        columnsData={polkadotBlockColumns}
-                        tableData={polkadotData}
-                    />
-                    {/* </Box> */}
-                {/* </Flex> */}
-
-            </Box>
-        </Flex>
-    );
+function onChange(newValue) {
+    console.log("change", newValue);
 }
 
+const Editor = (props) => {
+    const defaultHeight = "200px";
+    const expandHeight = "250px";
+    const [height, setHeight] = useState(props.height ? props.height : defaultHeight);
+    // const [value, setValue] = useState('');
+    const editorRef = useRef<any>();
 
+    
+    const [isRunning, setRunning] = useState(false);
+
+    const handleFormatCodeClick = () => {
+        beautify.beautify(editorRef.current.editor.session)
+    }
+
+    const handleRunClick = ({engine, table}) => {
+        setRunning(true);
+        console.log(value)
+        // Perform the desired action
+        // For example, make an API request or run a function
+
+        // After the action is complete, reset the UI state
+        setTimeout(() => {
+            setRunning(false);
+        }, 2000);
+    }
+
+    return (
+        <Box>
+            <AceEditor
+                mode="mysql"
+                theme="dracula"
+                onChange={(newValue) => {
+                    // props.setEditorValue(newValue)
+                    
+                } }
+                name="example"
+                editorProps={{ $blockScrolling: true }}
+                showGutter={props.showGutter}
+                fontSize={props.fontSize}
+                showPrintMargin={props.showPrintMargin}
+                highlightActiveLine={props.highlightActiveLine}
+                setOptions={props.setOptions}
+                ref={editorRef}
+                width={props.width}
+                value={props.editorValue}
+                height={height}
+            />
+            <Box
+                bg="black"
+            >
+                <Flex p="2">
+                    {/* Expand Icon */}
+                    <IconButton
+                        aria-label="Expand"
+                        icon={<BiCollapse />}
+                        bg="black"
+                        color="white"
+                        _hover={{ bg: 'black' }}
+                        mr="2"
+                        onClick={() => {
+                            height == defaultHeight ? setHeight(expandHeight) : setHeight(defaultHeight);
+                        }}
+                    />
+                    {/* Format Query Icon */}
+                    <IconButton
+                        aria-label="Format Query"
+                        icon={<BiCodeAlt />}
+                        bg="black"
+                        color="white"
+                        _hover={{ bg: 'black' }}
+                        mr="2"
+                        onClick={handleFormatCodeClick}
+                    />
+                    {/* Full Screen Icon */}
+                    <IconButton
+                        aria-label="Full Screen"
+                        icon={<BiFullscreen />}
+                        bg="black"
+                        color="white"
+                        _hover={{ bg: 'black' }}
+                    />
+
+
+                    <Flex alignItems="center" mr="2">
+                        <SimpleGrid
+                            columns={2}
+                            bg="black"
+                            columnGap="0.1rem"
+                            display="inline-flex"
+                        >
+
+                            {/* Run code IconButton */}
+                            <Button
+                                p="0.6rem 0.6rem"
+                                borderRadius="0.8rem"
+                                // pl="2"
+                                // pr="2"
+                                size="sm"
+                                borderTopRightRadius="none"
+                                borderBottomRightRadius="none"
+                                borderRadius="base"
+                                rightIcon={<SearchIcon />}
+                                onClick={handleRunClick}
+                                disabled={isRunning}
+                            >
+                                {isRunning ? (
+                                    <>
+                                        <CircularProgress size="20px" color="blue.500" isIndeterminate mr="2" />
+                                        Running
+                                    </>
+                                ) : (
+                                    ""
+                                )}
+                            </Button>
+                            <Button
+                                p="0.8rem"
+                                borderRadius="0.8rem"
+                                size="sm"
+                                // ml="0."
+                                borderTopLeftRadius="none"
+                                borderBottomLeftRadius="none"
+                                borderRadius="base"
+                                rightIcon={<TriangleDownIcon />}
+                            >
+                            </Button>
+
+                        </SimpleGrid>
+                    </Flex>
+                </Flex>
+            </Box>
+        </Box>
+    )
+};
+
+export default Editor;

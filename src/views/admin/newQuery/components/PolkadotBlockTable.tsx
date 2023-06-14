@@ -22,6 +22,7 @@ import {
 import Card from 'components/card/Card'
 import Menu from 'components/menu/MainMenu'
 import { TableProps } from 'views/admin/default/variables/columnsData'
+import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons'
 export default function ColumnsTable(props: TableProps) {
   const { columnsData, tableData } = props
 
@@ -46,7 +47,7 @@ export default function ColumnsTable(props: TableProps) {
     prepareRow,
     initialState
   } = tableInstance
-  initialState.pageSize = 10
+  initialState.pageSize = 5
 
   const textColor = useColorModeValue('secondaryGray.900', 'white')
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100')
@@ -159,12 +160,24 @@ export default function ColumnsTable(props: TableProps) {
         </Tbody>
       </Table>
 
-      <Button  >
-        上一页
+      <Flex justify='flex-start' mt='20px' ml='4'>
+      <Button
+        size='sm'
+        borderRadius='md'
+        leftIcon={<ChevronLeftIcon />}
+        mr='2'
+      >
+        {/* Previous Page */}
       </Button>
-      <Button  >
-        下一页
+      <Button
+        size='sm'
+        borderRadius='md'
+        rightIcon={<ChevronRightIcon />}
+      >
+        {/* Next Page */}
       </Button>
+    </Flex>
+
     </Card>
   )
 }
