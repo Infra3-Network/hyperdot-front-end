@@ -1,9 +1,9 @@
 import {
   Box, Flex,
- 
+
 } from '@chakra-ui/react'
 
-import React, { useEffect,  useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AdminLayout from 'layouts/admin'
 import dynamic from 'next/dynamic'
 import DataEngine from 'views/admin/newQuery/components/DataEngine';
@@ -22,7 +22,6 @@ export default function NewQuery() {
   const [dataEngines, setDataEngines] = useState(null);
   const [selectedDataEngine, setSelectedDataEngine] = useState('');
   const [selectedChain, setSelectedChian] = useState('');
-  // const editorRef = useRef<any>(null);
 
   useEffect(() => {
     fetchDataEngines(setDataEngines)
@@ -48,7 +47,6 @@ export default function NewQuery() {
             onSelectDataEngine={(e) => setSelectedDataEngine(e.target.value)}
             selectedChain={selectedChain}
             onSelectChain={(e) => setSelectedChian(e.target.value)}
-          // dataTables={dataTables}
 
           />
         </Box>
