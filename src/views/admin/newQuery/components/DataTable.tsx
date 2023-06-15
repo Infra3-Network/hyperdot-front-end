@@ -21,13 +21,14 @@ import {
 // Custom components
 import Card from 'components/card/Card'
 import Menu from 'components/menu/MainMenu'
-import { TableProps } from 'views/admin/default/variables/columnsData'
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons'
-export default function ColumnsTable(props: TableProps) {
-  const { columnsData, tableData } = props
+export default function DataTable(props) {
+  if (!props.tableData) {
+    return null
+  }
 
-  const columns = useMemo(() => columnsData, [columnsData])
-  const data = useMemo(() => tableData, [tableData])
+  const columns = useMemo(() => props.tableData.columns, [props.tableData.columns])
+  const data = useMemo(() => props.tableData.rows, [props.tableData.rows])
 
   const tableInstance = useTable(
     {
@@ -102,7 +103,6 @@ export default function ColumnsTable(props: TableProps) {
               <Tr {...row.getRowProps()} key={index}>
                 {row.cells.map((cell, index) => {
                   let data
-                  if (cell.column.Header === 'BLOCK NUMBER') {
                     data = (
                       <Flex align='center'>
                         <Text color={textColor} fontSize='sm' fontWeight='700'>
@@ -110,38 +110,7 @@ export default function ColumnsTable(props: TableProps) {
                         </Text>
                       </Flex>
                     )
-                  } else if (cell.column.Header === 'BLOCK HASH') {
-                    data = (
-                      <Flex align='center'>
-                        <Text
-                          me='10px'
-                          color={textColor}
-                          fontSize='sm'
-                          fontWeight='700'
-                        >
-                          {cell.value}%
-                        </Text>
-                      </Flex>
-                    )
-                  } else if (cell.column.Header === 'PARENT HASH') {
-                    data = (
-                      <Text color={textColor} fontSize='sm' fontWeight='700'>
-                        {cell.value}
-                      </Text>
-                    )
-                  } else if (cell.column.Header === 'STATE ROOT') {
-                    data = (
-                      <Text color={textColor} fontSize='sm' fontWeight='700'>
-                        {cell.value}
-                      </Text>
-                    )
-                  } else if (cell.column.Header === 'EXTRINSICS ROOT') {
-                    data = (
-                      <Text color={textColor} fontSize='sm' fontWeight='700'>
-                        {cell.value}
-                      </Text>
-                    )
-                  }
+                  
                   return (
                     <Td
                       {...cell.getCellProps()}

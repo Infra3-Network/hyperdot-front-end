@@ -1,33 +1,10 @@
 import {
-  Box, SimpleGrid, Flex,
-  ListItem,
-  Button,
-  ListIcon,
-  List,
-  Grid,
-  GridItem,
-  Input, IconButton, Select, Alert, AlertIcon, Link, UnorderedList, CircularProgress
+  Box, Flex,
+ 
 } from '@chakra-ui/react'
-import { BiSearch, BiFullscreen, BiCollapse, BiCodeAlt } from 'react-icons/bi';
-import { AiOutlineFundView } from 'react-icons/ai';
-import { BsTable } from 'react-icons/bs';
-import { SearchIcon, TriangleDownIcon } from '@chakra-ui/icons';
 
-import Card from "components/card/Card"
-
-
-import {
-  polkadotBlockColumns,
-
-} from 'views/admin/newQuery/variables/polkadotColumnData';
-
-import PolkadotBlockTable from 'views/admin/newQuery/components/PolkadotBlockTable';
-import polkadotData from 'views/admin/newQuery/variables/polkadotData.json';
-
-
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect,  useState } from 'react'
 import AdminLayout from 'layouts/admin'
-import { TableData } from 'views/admin/default/variables/columnsData'
 import dynamic from 'next/dynamic'
 import DataEngine from 'views/admin/newQuery/components/DataEngine';
 
@@ -56,8 +33,8 @@ export default function NewQuery() {
     return null
   }
 
-  const DataEditor = dynamic(
-    () => import('views/admin/newQuery/components/DataEditor'),
+  const DataPlayground = dynamic(
+    () => import('views/admin/newQuery/components/DataPlayground'),
     { ssr: false }
   )
 
@@ -71,7 +48,7 @@ export default function NewQuery() {
             onSelectDataEngine={(e) => setSelectedDataEngine(e.target.value)}
             selectedChain={selectedChain}
             onSelectChain={(e) => setSelectedChian(e.target.value)}
-            // dataTables={dataTables}
+          // dataTables={dataTables}
 
           />
         </Box>
@@ -80,30 +57,11 @@ export default function NewQuery() {
           height="100%"
         >
 
-          <Flex
-            // height="40%"
-            direction="column"
-            borderWidth="1px"
-            borderRadius="lg"
-            overflow="hidden"
-          >
+          <DataPlayground
+            selectedDataEngine={selectedDataEngine}
+            selectedChain={selectedChain}
+          />
 
-            <DataEditor
-              selectedDataEngine={selectedDataEngine}
-              selectedChain={selectedChain}
-            />
-
-          </Flex>
-
-          <Flex
-            mt="5"
-            direction="column"
-          >
-            <PolkadotBlockTable
-              columnsData={polkadotBlockColumns}
-              tableData={polkadotData}
-            />
-          </Flex>
         </Box>
       </Flex>
     </AdminLayout>
