@@ -11,6 +11,7 @@ import {
     Link,
 } from '@chakra-ui/react'
 import { BsTable } from 'react-icons/bs';
+import { hyperdotApis } from 'constants/hyperdot';
 
 function DataEngineSelect({ dataEngines, selectedDataEngine, onSelectDataEngine }: { dataEngines: any, selectedDataEngine: any, onSelectDataEngine: any }) {
     if (!dataEngines) {
@@ -28,8 +29,8 @@ function DataEngineSelect({ dataEngines, selectedDataEngine, onSelectDataEngine 
             onChange={onSelectDataEngine}
             isRequired={true}
         >
-            {dataEngines.engines.map((engine, index) => (
-                <option key={index} value={engine.name}>{engine.name}</option>
+            {Object.keys(dataEngines).map((engine, index) => (
+                <option key={index} value={engine}>{engine}</option>
             ))}
         </Select>
     )
@@ -39,14 +40,19 @@ function ChianSelect({ selectedEngine, dataEngines, selectedChain, onSelectChain
     if (selectedEngine.length == 0) {
         return <Select ml="4" placeholder="Select Chain" />
     }
-    if (!dataEngines.support_chains[selectedEngine]) {
+
+    console.log(dataEngines[selectedEngine].support_chains, selectedEngine);
+    const support_chains = dataEngines[selectedEngine].support_chains;
+
+
+    if (!support_chains) {
         return <Select ml="4" placeholder="No Chain support for this engine" />
     }
 
-    let chains = dataEngines.support_chains[selectedEngine];
+    // let chains = dataEngines.support_chains[selectedEngine];
     return (
         <Select ml="4" placeholder="Select Chain" value={selectedChain} onChange={onSelectChain}>
-            {chains.map(chain => (
+            {Object.keys(support_chains).map(chain => (
                 <option key={chain} value={chain}>
                     {chain}
                 </option>
@@ -55,41 +61,92 @@ function ChianSelect({ selectedEngine, dataEngines, selectedChain, onSelectChain
     )
 }
 
-function DataEngineView({ selectedDataEngine, selectedChain, dataTables, setDataTabls }) {
+const fetchDataTables = async (selectedDataEngine: string, 
+    selectedChain: string,
+    dataTables: any,
+    setDataTabls: any
+
+) => {
+    const schemeApi = hyperdotApis["dataengine"]["scheme"][selectedDataEngine][selectedChain];
+    if (!schemeApi) {
+        alert("can not support dataengine scheme")
+        return
+    }
+
+    const apiUrl = process.env.RESTURL_HYPERDOT + schemeApi;
+    console.log(apiUrl)
+
+    if (!dataTables) {
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            setDataTabls(data.tables);
+
+            console.log("shcme data: ", data)
+        } catch (error) {
+            console.error('Error fetching data tables:', error);
+        }
+    }
+
+    // if (selectedDataEngine && selectedChain) {
+    //     if (selectedDataEngine == "postgres" && selectedChain == "polkadot") {
+    //         if (!dataTables) {
+    //             try {
+    //                 const response = await fetch('http://127.0.0.1:3000/apis/v1/polkadot/psql/tables');
+    //                 const data = await response.json();
+    //                 setDataTabls(data);
+    //             } catch (error) {
+    //                 console.error('Error fetching data tables:', error);
+    //             }
+    //         }
+    //     }
+    // }
+}
+
+function DataEngineView({ selectedDataEngine, selectedChain, dataTables, setDataTabls, selectedScheme, setSelectedScheme }) {
     if (!(selectedDataEngine && selectedChain)) {
         return <Box bg="gray.400"></Box>
     }
 
-
- const fetchDataTables = async (selectedDataEngine, selectedChain) => {
-        if (selectedDataEngine && selectedChain) {
-            if (selectedDataEngine == "postgres" && selectedChain == "polkadot") {
-                if (!dataTables) {
-                    try {
-                        const response = await fetch('http://127.0.0.1:3000/apis/v1/polkadot/psql/tables');
-                        const data = await response.json();
-                        setDataTabls(data);
-                    } catch (error) {
-                        console.error('Error fetching data tables:', error);
-                    }
-                }
-            }
+    if (selectedScheme) {
+        const table_infos = dataTables[selectedScheme];
+        if (!table_infos) {
+            return <Box bg="gray.400"></Box>
         }
+        return (
+        <List>
+            {table_infos.map((table_info, index) => (
+
+                <ListItem key={table_info.column_name}>
+                    <Flex align="center">
+                        <Box w={'60%'}>
+                            <ListIcon as={BsTable} color='gray.400' />
+                            {table_info.column_name}
+                        </Box>
+                        <Box w={'40%'}>
+                            {table_info.data_type.toUpperCase()}
+                        </Box>
+                        {/* <Box ml="2"><AiOutlineFundView/></Box> */}
+                        {/* <Button ml="2" size="sm" variant="ghost">按钮图标</Button> */}
+                    </Flex>
+                </ListItem>
+            ))}
+        </List>
+        )
+
     }
 
     useEffect(() => {
-        fetchDataTables(selectedDataEngine, selectedChain)
+        fetchDataTables(selectedDataEngine, selectedChain, dataTables, setDataTabls)
     })
-   
+
     if (!dataTables) {
         return <Box bg="gray.400"></Box>
     }
 
-    console.log(dataTables)
-
     return (
         <List>
-            {dataTables.tables.map(table_name => (
+            {Object.keys(dataTables).map(table_name => (
 
                 <ListItem key={table_name}>
                     <Flex align="center">
@@ -97,7 +154,9 @@ function DataEngineView({ selectedDataEngine, selectedChain, dataTables, setData
                             <ListIcon as={BsTable} color='gray.400' />
                         </Box>
                         <Box w={'80%'}>
-                            <Link href="#" >
+                            <Link href="#" name={table_name} onClick={(e) => {
+                                setSelectedScheme(e.target.name)
+                            }}>
                                 {table_name}
                             </Link>
                         </Box>
@@ -112,6 +171,7 @@ function DataEngineView({ selectedDataEngine, selectedChain, dataTables, setData
 
 export default function DataEngine(props) {
     const [dataTables, setDataTabls] = useState(null);
+    const [selectScheme, setSelectedScheme] = useState('');
     return (
 
         <Flex direction="column" height="100%">
@@ -132,7 +192,11 @@ export default function DataEngine(props) {
             </Flex>
             <Flex direction="column" p="4">
                 <Flex align="center" mb="4">
-                    <Link href="#">链接</Link>
+                    <Link href="#" onClick={() => {
+                        if (selectScheme) {
+                            setSelectedScheme('')
+                        }
+                    }}>return</Link>
                     <ChianSelect
                         selectedEngine={props.selectedDataEngine}
                         dataEngines={props.dataEngines}
@@ -147,6 +211,8 @@ export default function DataEngine(props) {
                         selectedChain={props.selectedChain}
                         dataTables={dataTables}
                         setDataTabls={setDataTabls}
+                        selectedScheme={selectScheme}
+                        setSelectedScheme={setSelectedScheme}
                     />
                 </Flex>
             </Flex>
