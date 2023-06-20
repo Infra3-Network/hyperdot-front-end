@@ -11,6 +11,7 @@ import "ace-builds/src-noconflict/theme-dracula";
 import "ace-builds/src-noconflict/ext-language_tools";
 import beautify from 'ace-builds/src-noconflict/ext-beautify';
 import { useRouter } from "next/router";
+import { hyperdotApis } from "constants/hyperdot";
 
 const defaultHeight = '200px';
 const expandHeight = "250px";
@@ -62,21 +63,25 @@ const DataPlayground = (props: any) => {
             return
         }
 
+        console.log(engine.toLowerCase())
         setRunning(true);
-
-        const url = 'http://127.0.0.1:3000/apis/v1/query/run/' + engine;
-        const payload = {
-            engine: engine,
-            chain: chian,
-            query: query,
-        };
+        const engien_api = hyperdotApis['query']['run'][engine.toLowerCase()];
+        if (!engien_api) {
+            alert(engine.toLowerCase() + ' api not found')
+        }
+        const url = process.env.RESTURL_HYPERDOT + engien_api.url;
+        const method = engien_api.method;
 
         fetch(url, {
-            method: 'POST',
+            method: method,
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({
+                engine: engine.toLowerCase(),
+                chain: chian,
+                query: query,
+            }),
         })
             .then((response) => response.json())
             .then((data) => {
@@ -116,7 +121,7 @@ const DataPlayground = (props: any) => {
                         onInput={(event?: any) => { }}
                         onLoad={() => {
                         }}
-                        onValidate={(anno) => console.log(anno)}
+                        // onValidate={(anno) => console.log(anno)}
                         name="data-editor"
                         editorProps={{ $blockScrolling: true }}
                         fontSize={14}

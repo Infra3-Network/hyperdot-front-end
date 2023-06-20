@@ -9,9 +9,11 @@ import {
     Alert,
     AlertIcon,
     Link,
+    IconButton,
 } from '@chakra-ui/react'
 import { BsTable } from 'react-icons/bs';
 import { hyperdotApis } from 'constants/hyperdot';
+import { ArrowBackIcon } from '@chakra-ui/icons';
 
 function DataEngineSelect({ dataEngines, selectedDataEngine, onSelectDataEngine }: { dataEngines: any, selectedDataEngine: any, onSelectDataEngine: any }) {
     if (!dataEngines) {
@@ -41,7 +43,7 @@ function ChianSelect({ selectedEngine, dataEngines, selectedChain, onSelectChain
         return <Select ml="4" placeholder="Select Chain" />
     }
 
-    console.log(dataEngines[selectedEngine].support_chains, selectedEngine);
+    // console.log(dataEngines[selectedEngine].support_chains, selectedEngine);
     const support_chains = dataEngines[selectedEngine].support_chains;
 
 
@@ -61,28 +63,36 @@ function ChianSelect({ selectedEngine, dataEngines, selectedChain, onSelectChain
     )
 }
 
-const fetchDataTables = async (selectedDataEngine: string, 
+const fetchDataTables = async (selectedDataEngine: string,
     selectedChain: string,
     dataTables: any,
     setDataTabls: any
 
 ) => {
-    const schemeApi = hyperdotApis["dataengine"]["scheme"][selectedDataEngine][selectedChain];
+    const schemeApi = hyperdotApis["dataengine"]["scheme"][selectedDataEngine];
     if (!schemeApi) {
         alert("can not support dataengine scheme")
         return
     }
 
     const apiUrl = process.env.RESTURL_HYPERDOT + schemeApi;
-    console.log(apiUrl)
+    // console.log(apiUrl)
 
     if (!dataTables) {
         try {
-            const response = await fetch(apiUrl);
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chain: selectedChain
+                })
+            });
             const data = await response.json();
+            console.log("shcme data: ", data)
             setDataTabls(data.tables);
 
-            console.log("shcme data: ", data)
         } catch (error) {
             console.error('Error fetching data tables:', error);
         }
@@ -114,24 +124,24 @@ function DataEngineView({ selectedDataEngine, selectedChain, dataTables, setData
             return <Box bg="gray.400"></Box>
         }
         return (
-        <List>
-            {table_infos.map((table_info, index) => (
+            <List>
+                {table_infos.map((table_info, index) => (
 
-                <ListItem key={table_info.column_name}>
-                    <Flex align="center">
-                        <Box w={'60%'}>
-                            <ListIcon as={BsTable} color='gray.400' />
-                            {table_info.column_name}
-                        </Box>
-                        <Box w={'40%'}>
-                            {table_info.data_type.toUpperCase()}
-                        </Box>
-                        {/* <Box ml="2"><AiOutlineFundView/></Box> */}
-                        {/* <Button ml="2" size="sm" variant="ghost">按钮图标</Button> */}
-                    </Flex>
-                </ListItem>
-            ))}
-        </List>
+                    <ListItem key={table_info.column_name}>
+                        <Flex align="center">
+                            <Box w={'60%'}>
+                                <ListIcon as={BsTable} color='gray.400' />
+                                {table_info.column_name}
+                            </Box>
+                            <Box w={'40%'}>
+                                {table_info.data_type.toUpperCase()}
+                            </Box>
+                            {/* <Box ml="2"><AiOutlineFundView/></Box> */}
+                            {/* <Button ml="2" size="sm" variant="ghost">按钮图标</Button> */}
+                        </Flex>
+                    </ListItem>
+                ))}
+            </List>
         )
 
     }
@@ -192,11 +202,30 @@ export default function DataEngine(props) {
             </Flex>
             <Flex direction="column" p="4">
                 <Flex align="center" mb="4">
-                    <Link href="#" onClick={() => {
+                    <IconButton
+                        aria-label='back-tables'
+                        bg='transparent'
+                        size={'md'}
+                        _hover={{ bg: 'none' }}
+                        rounded={'none'}
+                        boxShadow={'none'}
+                        variant={'unstyled'}
+                        icon={<ArrowBackIcon />}
+                        onClick={() => {
+                            if (selectScheme) {
+                                setSelectedScheme('')
+                            }
+                        }}
+                    />
+
+
+                    {/* <Link href="#" onClick={() => {
                         if (selectScheme) {
                             setSelectedScheme('')
                         }
-                    }}>return</Link>
+                    }}>
+                        return
+                    </Link> */}
                     <ChianSelect
                         selectedEngine={props.selectedDataEngine}
                         dataEngines={props.dataEngines}
