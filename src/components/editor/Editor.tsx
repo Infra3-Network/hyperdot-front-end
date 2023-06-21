@@ -12,11 +12,8 @@ import "ace-builds/src-noconflict/theme-dracula";
 import "ace-builds/src-noconflict/ext-language_tools";
 import beautify from 'ace-builds/src-noconflict/ext-beautify';
 
-function onChange(newValue) {
-    console.log("change", newValue);
-}
 
-const Editor = (props) => {
+const Editor = (props: any) => {
     const defaultHeight = "250px";
     const expandHeight = "400px";
     const [height, setHeight] = useState(props.height ? props.height : defaultHeight);
@@ -52,7 +49,7 @@ const Editor = (props) => {
             <AceEditor
                 mode="mysql"
                 theme="dracula"
-                onChange={onChange}
+                // onChange={onChange}
                 name="example"
                 editorProps={{ $blockScrolling: true }}
                 showGutter={props.showGutter}
@@ -115,7 +112,7 @@ const Editor = (props) => {
                                 size="sm"
                                 borderTopRightRadius="none"
                                 borderBottomRightRadius="none"
-                                borderRadius="base"
+                                // borderRadius="base"
                                 rightIcon={<SearchIcon />}
                                 onClick={handleRunClick}
                                 disabled={isRunning}
@@ -136,7 +133,7 @@ const Editor = (props) => {
                                 // ml="0."
                                 borderTopLeftRadius="none"
                                 borderBottomLeftRadius="none"
-                                borderRadius="base"
+                                // borderRadius="base"
                                 rightIcon={<TriangleDownIcon />}
                             >
                             </Button>

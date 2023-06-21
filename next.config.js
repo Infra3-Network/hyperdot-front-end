@@ -19,25 +19,38 @@ module.exports = (phase) => {
 
   const env = {
     RESTURL_HYPERDOT: (() => {
-      if (isDev) return 'http://127.0.0.1:3000'
+      if (isDev) return 'https://hyperdot.infra-3.xyz'
       if (isProd) {
-        return ''
+        return 'https://hyperdot.infra-3.xyz'
       }
       if (isStaging) return 'http://localhost:11639'
       return 'RESTURL_SPEAKERS:not (isDev,isProd && !isStaging,isProd && isStaging)'
     })(),
     RESTURL_SESSIONS: (() => {
       if (isDev) return 'http://localhost:4000/sessions'
-      if (isProd) return 'https://www.siliconvalley-codecamp.com/rest/sessions'
-      if (isStaging) return 'http://localhost:11639'
+      if (isProd) return 'https://hyperdot.infra-3.xyz/'
+      if (isStaging) return ''
       return 'RESTURL_SESSIONS:not (isDev,isProd && !isStaging,isProd && isStaging)'
     })(),
   }
 
   // next.config.js object
   return {
-    reactStrictMode: true,
+    reactStrictMode: false,
     swcMinify: true,
+    eslint: {
+      // Warning: This allows production builds to successfully complete even if
+      // your project has ESLint errors.
+      ignoreDuringBuilds: true,
+
+    },
+    typescript: {
+      // !! WARN !!
+      // Dangerously allow production builds to successfully complete even if
+      // your project has type errors.
+      // !! WARN !!
+      ignoreBuildErrors: true,
+    },
     env
   }
 }

@@ -2,7 +2,6 @@
   "name": "horizon-ui-chakra-nextjs",
   "version": "1.0.0",
   "private": true,
-  "proxy": "http://127.0.0.1:3000",
   "dependencies": {
     "@chakra-ui/icons": "^1.1.5",
     "@chakra-ui/react": "1.8.8",

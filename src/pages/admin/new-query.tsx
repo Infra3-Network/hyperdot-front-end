@@ -51,9 +51,9 @@ export default function NewQuery() {
           <DataEngine
             dataEngines={dataEngines}
             selectedDataEngine={selectedDataEngine}
-            onSelectDataEngine={(e) => setSelectedDataEngine(e.target.value)}
+            onSelectDataEngine={(e: any) => setSelectedDataEngine(e.target.value)}
             selectedChain={selectedChain}
-            onSelectChain={(e) => setSelectedChian(e.target.value)}
+            onSelectChain={(e: any) => setSelectedChian(e.target.value)}
 
           />
         </Box>

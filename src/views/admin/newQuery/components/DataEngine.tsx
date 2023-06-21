@@ -38,7 +38,7 @@ function DataEngineSelect({ dataEngines, selectedDataEngine, onSelectDataEngine 
     )
 }
 
-function ChianSelect({ selectedEngine, dataEngines, selectedChain, onSelectChain }) {
+function ChianSelect({ selectedEngine, dataEngines, selectedChain, onSelectChain }: any) {
     if (selectedEngine.length == 0) {
         return <Select ml="4" placeholder="Select Chain" />
     }
