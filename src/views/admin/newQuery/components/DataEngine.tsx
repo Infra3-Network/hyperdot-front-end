@@ -197,7 +197,7 @@ export default function DataEngine(props) {
 
                 <Alert status="info">
                     <AlertIcon />
-                    这是一个信息提示框
+                    Selecting a supported Data Engine will show the chain supported by that Data Engine
                 </Alert>
             </Flex>
             <Flex direction="column" p="4">

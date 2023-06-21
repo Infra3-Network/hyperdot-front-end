@@ -53,7 +53,7 @@ export default function HeaderLinks(props: { secondary: boolean }) {
 			p='10px'
 			borderRadius='30px'
 			boxShadow={shadow}>
-			<SearchBar
+			{/* <SearchBar
 				mb={() => {
 					if (secondary) {
 						return { base: '10px', md: 'unset' };
@@ -61,9 +61,9 @@ export default function HeaderLinks(props: { secondary: boolean }) {
 					return 'unset';
 				}}
 				me='10px'
-				borderRadius='30px'
-			/>
-			<Flex
+				borderRadius='30px' */}
+			{/* /> */}
+			{/* <Flex
 				bg={ethBg}
 				display={secondary ? 'flex' : 'none'}
 				borderRadius='30px'
@@ -81,8 +81,8 @@ export default function HeaderLinks(props: { secondary: boolean }) {
 						ETH
 					</Text>
 				</Text>
-			</Flex>
-			<SidebarResponsive routes={routes} />
+			</Flex> */}
+			{/* <SidebarResponsive routes={routes} />
 			<Menu>
 				<MenuButton p='0px'>
 					<Icon mt='6px' as={MdNotificationsNone} color={navbarIcon} w='18px' h='18px' me='10px' />
@@ -114,9 +114,9 @@ export default function HeaderLinks(props: { secondary: boolean }) {
 						</MenuItem>
 					</Flex>
 				</MenuList>
-			</Menu>
+			</Menu> */}
 
-			<Menu>
+			{/* <Menu>
 				<MenuButton p='0px'>
 					<Icon mt='6px' as={MdInfoOutline} color={navbarIcon} w='18px' h='18px' me='10px' />
 				</MenuButton>
@@ -155,7 +155,7 @@ export default function HeaderLinks(props: { secondary: boolean }) {
 						</Link>
 					</Flex>
 				</MenuList>
-			</Menu>
+			</Menu> */}
 
 			<Button
 				variant='no-hover'
@@ -171,10 +171,11 @@ export default function HeaderLinks(props: { secondary: boolean }) {
 					h='18px'
 					w='18px'
 					color={navbarIcon}
+					// as={IoMdMoon}
 					as={colorMode === 'light' ? IoMdMoon : IoMdSunny}
 				/>
 			</Button>
-			<Menu>
+			{/* <Menu>
 				<MenuButton p='0px'>
 					<Avatar
 						_hover={{ cursor: 'pointer' }}
@@ -218,7 +219,7 @@ export default function HeaderLinks(props: { secondary: boolean }) {
 						</MenuItem>
 					</Flex>
 				</MenuList>
-			</Menu>
+			</Menu> */}
 		</Flex>
 	);
 }
