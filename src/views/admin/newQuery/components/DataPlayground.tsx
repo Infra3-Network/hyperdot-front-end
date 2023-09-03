@@ -16,6 +16,57 @@ import { hyperdotApis } from "constants/hyperdot";
 const defaultHeight = '200px';
 const expandHeight = "250px";
 
+
+interface RunClick {
+    engine: string,
+    query: string
+    setRunning: any
+}
+
+const handleRunClick = ({query, engine, setRunning}: RunClick) => {
+    if (!query) {
+        alert("please input query")
+        return
+    }
+
+    setRunning(true);
+    // const engien_api = hyperdotApis['query']['run'][engine.toLowerCase()];
+    // if (!engien_api) {
+    //     alert(engine.toLowerCase() + ' api not found')
+    // }
+    // const url = process.env.RESTURL_HYPERDOT + engien_api.url;
+    // const method = engien_api.method;
+    //
+    // fetch(url, {
+    //     method: method,
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({
+    //         engine: engine.toLowerCase(),
+    //         chain: chian,
+    //         query: query,
+    //     }),
+    // })
+    //     .then((response) => response.json())
+    //     .then((data) => {
+    //         setTableData({
+    //             columns: data.rows.columns.map((column) => ({
+    //                 Header: column.toUpperCase(),
+    //                 accessor: column
+    //             })),
+    //             rows: data.rows.rows,
+    //         })
+    //     })
+    //     .catch((error) => {
+    //         console.error(error);
+    //     })
+    //     .finally(() => {
+    //         setRunning(false);
+    //     });
+}
+
+
 const DataPlayground = (props: any) => {
     const editorRef = useRef<any>();
     const router = useRouter();
@@ -45,60 +96,6 @@ const DataPlayground = (props: any) => {
 
     const handleFormatCodeClick = () => {
         beautify.beautify(editorRef.current.editor.session)
-    }
-
-    const handleRunClick = (engine, chian, query) => {
-        if (!engine) {
-            alert("please select engine")
-            return
-        }
-
-        if (!chian) {
-            alert("please select chian")
-            return
-        }
-
-        if (!query) {
-            alert("please input query")
-            return
-        }
-
-        console.log(engine.toLowerCase())
-        setRunning(true);
-        const engien_api = hyperdotApis['query']['run'][engine.toLowerCase()];
-        if (!engien_api) {
-            alert(engine.toLowerCase() + ' api not found')
-        }
-        const url = process.env.RESTURL_HYPERDOT + engien_api.url;
-        const method = engien_api.method;
-
-        fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                engine: engine.toLowerCase(),
-                chain: chian,
-                query: query,
-            }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                setTableData({
-                    columns: data.rows.columns.map((column) => ({
-                        Header: column.toUpperCase(),
-                        accessor: column
-                    })),
-                    rows: data.rows.rows,
-                })
-            })
-            .catch((error) => {
-                console.error(error);
-            })
-            .finally(() => {
-                setRunning(false);
-            });
     }
 
     return (
@@ -190,7 +187,7 @@ const DataPlayground = (props: any) => {
                                         borderTopRightRadius="none"
                                         borderBottomRightRadius="none"
                                         rightIcon={<SearchIcon />}
-                                        onClick={() => handleRunClick(props.selectedDataEngine, props.selectedChain, value)}
+                                        onClick={() => handleRunClick({query: value, setRunning})}
                                         disabled={isRunning}
                                     >
                                         {isRunning ? (

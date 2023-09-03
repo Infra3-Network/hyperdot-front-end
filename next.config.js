@@ -15,11 +15,9 @@ module.exports = (phase) => {
   const isStaging =
     phase === PHASE_PRODUCTION_BUILD && process.env.STAGING === '1'
 
-  console.log(`isDev:${isDev}  isProd:${isProd}   isStaging:${isStaging}`)
-
   const env = {
     RESTURL_HYPERDOT: (() => {
-      if (isDev) return 'http://127.0.0.1:3000'
+      if (isDev) return 'http://127.0.0.1:3030'
       if (isProd) {
         return ''
       }
@@ -32,6 +30,17 @@ module.exports = (phase) => {
       if (isStaging) return 'http://localhost:11639'
       return 'RESTURL_SESSIONS:not (isDev,isProd && !isStaging,isProd && isStaging)'
     })(),
+    DEV: (() => {
+      return isDev;
+    })(),
+
+    PROD: (() => {
+      return isProd;
+    })(),
+
+    STAGING: (() => {
+      return isStaging
+  })(),
   }
 
   // next.config.js object
