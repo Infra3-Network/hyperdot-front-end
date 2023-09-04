@@ -11,20 +11,14 @@ import {
     AlertIcon,
     Link,
     Icon,
-    Text, propNames,
-
+    Text,
+    Image,
+    useDisclosure
 } from '@chakra-ui/react'
 import {BsTable} from 'react-icons/bs';
-import {hyperdotApis} from 'constants/hyperdot';
 import {ArrowBackIcon} from '@chakra-ui/icons';
-import {MdCheckCircle, MdSettings} from "react-icons/md";
 import {SiHiveBlockchain} from "react-icons/si";
-import {left} from "@popperjs/core";
-import {useDisclosure} from '@chakra-ui/react'
 import ChainModal from "../../../../components/chain/Modal";
-import * as querystring from "querystring";
-import {Simulate} from "react-dom/test-utils";
-import reset = Simulate.reset;
 
 
 interface QESelectProps {
@@ -63,150 +57,94 @@ function QESelect({queryEngines, setDatasets, selectedDataEngine, onSelectDataEn
     )
 }
 
-function ChianSelect({selectedEngine, dataEngines, selectedChain, onSelectChain}) {
-    if (selectedEngine.length == 0) {
-        return <Select ml="4" placeholder="Select Chain"/>
-    }
-
-    // console.log(dataEngines[selectedEngine].support_chains, selectedEngine);
-    const support_chains = dataEngines[selectedEngine].support_chains;
-
-
-    if (!support_chains) {
-        return <Select ml="4" placeholder="No Chain support for this engine"/>
-    }
-
-    // let chains = dataEngines.support_chains[selectedEngine];
-    return (
-        <Select ml="4" placeholder="Select Chain" value={selectedChain} onChange={onSelectChain}>
-            {Object.keys(support_chains).map(chain => (
-                <option key={chain} value={chain}>
-                    {chain}
-                </option>
-            ))}
-        </Select>
-    )
+interface QEDataTableProps {
+    data: any,
+    chain: any
 }
 
-const fetchDataTables = async (selectedDataEngine: string,
-                               selectedChain: string,
-                               dataTables: any,
-                               setDataTabls: any
-) => {
-    const schemeApi = hyperdotApis["dataengine"]["scheme"][selectedDataEngine];
-    if (!schemeApi) {
-        alert("can not support dataengine scheme")
-        return
+function QEDataTables(props: QEDataTableProps) {
+    if (!props.data) {
+        return null
+    }
+    const chainTables = props.data.chainTables;
+    let tables: string[] = [];
+    if (props.chain) {
+        console.log(chainTables)
+        Object.keys(chainTables).forEach((key) => {
+            console.log(props.chain.chainID)
+            if (key == props.chain.chainID.toString()) {
+                tables = chainTables[key]
+                return
+            }
+        });
+    } else {
+        Object.keys(chainTables).forEach((key) => {
+            tables.push(...chainTables[key])
+        })
     }
 
-    const apiUrl = process.env.RESTURL_HYPERDOT + schemeApi;
-    // console.log(apiUrl)
 
-    if (!dataTables) {
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    chain: selectedChain
-                })
-            });
-            const data = await response.json();
-            console.log("shcme data: ", data)
-            setDataTabls(data.tables);
-
-        } catch (error) {
-            console.error('Error fetching data tables:', error);
-        }
-    }
-
-    // if (selectedDataEngine && selectedChain) {
-    //     if (selectedDataEngine == "postgres" && selectedChain == "polkadot") {
-    //         if (!dataTables) {
-    //             try {
-    //                 const response = await fetch('http://127.0.0.1:3000/apis/v1/polkadot/psql/tables');
-    //                 const data = await response.json();
-    //                 setDataTabls(data);
-    //             } catch (error) {
-    //                 console.error('Error fetching data tables:', error);
-    //             }
-    //         }
+    // if (selectedScheme) {
+    //     const table_infos = dataTables[selectedScheme];
+    //     if (!table_infos) {
+    //         return <Box bg="gray.400"></Box>
     //     }
+    //     return (
+    //         <List>
+    //             {table_infos.map((table_info, index) => (
+    //
+    //                 <ListItem key={table_info.column_name}>
+    //                     <Flex align="center">
+    //                         <Box w={'60%'}>
+    //                             <ListIcon as={BsTable} color='gray.400'/>
+    //                             {table_info.column_name}
+    //                         </Box>
+    //                         <Box w={'40%'}>
+    //                             {table_info.data_type.toUpperCase()}
+    //                         </Box>
+    //                         {/* <Box ml="2"><AiOutlineFundView/></Box> */}
+    //                         {/* <Button ml="2" size="sm" variant="ghost">按钮图标</Button> */}
+    //                     </Flex>
+    //                 </ListItem>
+    //             ))}
+    //         </List>
+    //     )
+    //
     // }
-}
 
-function DataEngineView({
-                            selectedDataEngine,
-                            selectedChain,
-                            dataTables,
-                            setDataTabls,
-                            selectedScheme,
-                            setSelectedScheme
-                        }) {
-    if (!(selectedDataEngine && selectedChain)) {
-        return <Box bg="gray.400"></Box>
-    }
+    return (
+        <Flex
+            direction="column"
+            overflow={'auto'}
+            gridGap={'2rem'}
+            padding={'0 1rem 2rem'}
+            m={'0'}
+        >
+            <List
+                gridGap={'.5rem'}
+            >
 
-    if (selectedScheme) {
-        const table_infos = dataTables[selectedScheme];
-        if (!table_infos) {
-            return <Box bg="gray.400"></Box>
-        }
-        return (
-            <List>
-                {table_infos.map((table_info, index) => (
-
-                    <ListItem key={table_info.column_name}>
-                        <Flex align="center">
-                            <Box w={'60%'}>
+                {tables.map((table, index) => (
+                    <ListItem
+                        alignItems={'center'}
+                        _hover={{background: 'gray.300'}}
+                        key={'Test'}
+                    >
+                        <Flex direction={'row'}>
+                            <Box w={'20%'}>
                                 <ListIcon as={BsTable} color='gray.400'/>
-                                {table_info.column_name}
                             </Box>
-                            <Box w={'40%'}>
-                                {table_info.data_type.toUpperCase()}
+                            <Box w={'80%'}>
+                                <Link href="#" onClick={() => {
+                                }}>
+                                    {table}
+                                </Link>
                             </Box>
-                            {/* <Box ml="2"><AiOutlineFundView/></Box> */}
-                            {/* <Button ml="2" size="sm" variant="ghost">按钮图标</Button> */}
                         </Flex>
                     </ListItem>
                 ))}
             </List>
-        )
-
-    }
-
-    useEffect(() => {
-        fetchDataTables(selectedDataEngine, selectedChain, dataTables, setDataTabls)
-    })
-
-    if (!dataTables) {
-        return <Box bg="gray.400"></Box>
-    }
-
-    return (
-        <List>
-            {Object.keys(dataTables).map(table_name => (
-
-                <ListItem key={table_name}>
-                    <Flex align="center">
-                        <Box w={'20%'}>
-                            <ListIcon as={BsTable} color='gray.400'/>
-                        </Box>
-                        <Box w={'80%'}>
-                            <Link href="#" name={table_name} onClick={(e) => {
-                                setSelectedScheme(e.target.name)
-                            }}>
-                                {table_name}
-                            </Link>
-                        </Box>
-                        {/* <Box ml="2"><AiOutlineFundView/></Box> */}
-                        {/* <Button ml="2" size="sm" variant="ghost">按钮图标</Button> */}
-                    </Flex>
-                </ListItem>
-            ))}
-        </List>
+        </Flex>
     )
 }
 
@@ -293,13 +231,13 @@ const fetchDataset = (queryEngine: string, tag: string, setData: any) => {
     const apiUrl = process.env.RESTURL_HYPERDOT + schemeApi;
 
     try {
-        const response =  fetch(apiUrl, {
+        const response = fetch(apiUrl, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
         }).then(response => {
-           return response.json()
+            return response.json()
         }).then(data => {
             if (data.code != 1) {
                 console.error('Error fetching data tables:', data);
@@ -321,23 +259,21 @@ interface QEChainsProps {
     setTag: any
     data: any,
     setData: any,
+    chain: any,
+    setChain: any,
 }
 
 function QEChains(props: QEChainsProps) {
-    if (props.tag.length == 0 || props.queryEngine.length == 0) {
-        return null
-    }
-
     useEffect(() => {
         fetchDataset(props.queryEngine, props.tag, props.setData);
-    }, [props.queryEngine, props.setData, props.tag]);
+    }, [props.queryEngine, props.tag, props.setData]);
+
 
     const {isOpen, onOpen, onClose} = useDisclosure()
 
     if (props.data == null) {
         return null
     }
-    console.log(props.data)
     return (
         <Flex
             direction={'row'}
@@ -355,22 +291,42 @@ function QEChains(props: QEChainsProps) {
                     _hover={{background: 'gray.400'}}
                     onClick={() => {
                         props.setTag('')
+                        props.setChain(null)
                     }}
                 >
                     <Icon as={ArrowBackIcon} cursor={'pointer'}/>
                     <Text fontSize={'sm'}> {props.tag}  </Text>
                 </Button>
             </Flex>
-            <Button
-                display={'inline-flex'}
-                padding={'0.4rem'}
+            {props.chain ? (<Button
+                display={'flex'}
+                flexDirection={'row'}
                 borderRadius={'3px'}
                 overflow={'hidden'}
-                bgColor={'transparent'}
-                fontSize={'sm'}
+                bgColor={'gray.200'}
                 _hover={{background: 'gray.400'}}
-                onClick={onOpen}>All Chains</Button>
-            <ChainModal isOpen={isOpen} onClose={onClose} chains={props.data.chains} relayChains={props.data.relayChains}/>
+                onClick={onOpen}
+            >
+                <Image verticalAlign={'middle'} borderRadius={'50%'} width={'24px'}
+                       src={props.chain.iconUrl}/>
+                <Text fontSize={'0.85rem'} textAlign={'center'}>{props.chain.chainName}</Text>
+            </Button>) : (
+                <Button
+                    display={'inline-flex'}
+                    padding={'0.4rem'}
+                    borderRadius={'3px'}
+                    overflow={'hidden'}
+                    bgColor={'gray.300'}
+                    fontSize={'sm'}
+                    _hover={{background: 'gray.400'}}
+                    onClick={onOpen}>
+                    All Chains
+                </Button>
+            )}
+
+
+            <ChainModal isOpen={isOpen} onClose={onClose} chains={props.data.chains}
+                        relayChains={props.data.relayChains} setChain={props.setChain}/>
         </Flex>
     )
 }
@@ -387,10 +343,9 @@ export default function DataEngine(props: Props) {
     const [datasets, setDatasets] = useState(null);
     const [tag, setTag] = useState("");
     const [data, setData] = useState(null)
+    const [chain, setChain] = useState(null)
     return (
         <Flex direction="column" height="100%">
-            {/* 第一部分 */}
-
             <Flex direction="column" p="4">
                 < QESelect
                     queryEngines={props.engines}
@@ -414,55 +369,15 @@ export default function DataEngine(props: Props) {
                 setTag={setTag}
             />
 
-            <QEChains tag={tag} queryEngine={props.queryEngine} data={data} setData={setData}
-                      setTag={setTag}/>
+            {(tag && props.queryEngine) ? (
+                <QEChains tag={tag} queryEngine={props.queryEngine} data={data} setData={setData}
+                          setTag={setTag} chain={chain} setChain={setChain}/>
 
 
-            {/*<Flex direction="column" p="4">*/}
-            {/*    <Flex align="center" mb="4">*/}
-            {/*        <IconButton*/}
-            {/*            aria-label='back-tables'*/}
-            {/*            bg='transparent'*/}
-            {/*            size={'md'}*/}
-            {/*            _hover={{ bg: 'none' }}*/}
-            {/*            rounded={'none'}*/}
-            {/*            boxShadow={'none'}*/}
-            {/*            variant={'unstyled'}*/}
-            {/*            icon={<ArrowBackIcon />}*/}
-            {/*            onClick={() => {*/}
-            {/*                if (selectScheme) {*/}
-            {/*                    setSelectedScheme('')*/}
-            {/*                }*/}
-            {/*            }}*/}
-            {/*        />*/}
-
-
-            {/*        /!* <Link href="#" onClick={() => {*/}
-            {/*            if (selectScheme) {*/}
-            {/*                setSelectedScheme('')*/}
-            {/*            }*/}
-            {/*        }}>*/}
-            {/*            return*/}
-            {/*        </Link> *!/*/}
-            {/*        <ChianSelect*/}
-            {/*            selectedEngine={props.selectedDataEngine}*/}
-            {/*            dataEngines={props.dataEngines}*/}
-            {/*            selectedChain={props.selectedChain}*/}
-            {/*            onSelectChain={props.onSelectChain}*/}
-            {/*        />*/}
-
-            {/*    </Flex>*/}
-            {/*    <Flex direction="column">*/}
-            {/*        <DataEngineView*/}
-            {/*            selectedDataEngine={props.selectedDataEngine}*/}
-            {/*            selectedChain={props.selectedChain}*/}
-            {/*            dataTables={dataTables}*/}
-            {/*            setDataTabls={setDataTabls}*/}
-            {/*            selectedScheme={selectScheme}*/}
-            {/*            setSelectedScheme={setSelectedScheme}*/}
-            {/*        />*/}
-            {/*    </Flex>*/}
-            {/*</Flex>*/}
+            ) : null}
+            {(tag && props.queryEngine) ?
+                (<QEDataTables data={data} chain={chain}/>) : null
+            }
         </Flex>
     )
 }

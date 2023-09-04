@@ -20,9 +20,13 @@ interface Props {
     onClose: any,
     relayChains: any,
     chains: any,
+    setChain: any
 }
 
 function ChainModal(props: Props) {
+    if (!props.relayChains || !props.chains) {
+        return null
+    }
     return (
         <>
             <Modal
@@ -77,6 +81,11 @@ function ChainModal(props: Props) {
                                                     mb={'3px'}
                                                     textAlign={'center'}
                                                     variant='outline'
+                                                    onClick={() => {
+                                                        console.log(props.chains[id])
+                                                        props.setChain(props.chains[id])
+                                                        props.onClose()
+                                                    }}
                                                 >
                                                     <Image verticalAlign={'middle'} borderRadius={'50%'} width={'24px'}
                                                            src={props.chains[id].iconUrl}/>
